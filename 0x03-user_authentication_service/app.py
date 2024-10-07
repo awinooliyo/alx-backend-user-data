@@ -16,12 +16,15 @@ def home():
     return jsonify({"message": "Bienvenue"})
 
 
-@app.route("/users", methods=["POST"])
-def register_user():
-    """Register a new user with the given email and password.
+@app.route("/users", methods=["POST"], strict_slashes=False)
+def users() -> str:
+    """POST /users
+    Register a new user.
 
-    Expects form data with "email" and "password".
-    Returns a JSON response indicating the result.
+    Returns:
+        JSON payload containing:
+        - email: The registered email address
+        - message: A confirmation message.
     """
     email = request.form.get("email")
     password = request.form.get("password")
@@ -30,11 +33,8 @@ def register_user():
         return jsonify({"message": "email and password required"}), 400
 
     try:
-        user = AUTH.register_user(email, password)
-        return jsonify({"email": user.email, "message": "user created"}), 201
-    except ValueError as e:
-        return jsonify({"message": str(e)}), 400
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+        # Register the user
+        AUTH.register_user(email, password)
+        return jsonify({"email": email, "message": "user created"}), 201
+    except ValueError:
+        return jsonify({"message": "email already registered"}), 400
