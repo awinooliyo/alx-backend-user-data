@@ -26,23 +26,30 @@ class Auth:
         return bcrypt.hashpw(password.encode('utf-8'), salt)
 
     def register_user(self, email: str, password: str) -> User:
-        """Register a new user with the given email and password.
+        """Registers a new user with the given email and password.
 
         Args:
-            email (str): The email address of the new user.
-            password (str): The password for the new user.
+            email (str): The email of the new user.
+            password (str): The password of the new user.
 
         Returns:
             User: A User object representing the newly created user.
 
         Raises:
-            ValueError: If a user with the provided email already exists.
+            ValueError: If a user with the given email already exists.
         """
-        # Check if user already exists
         try:
+            # Search for the user by email
             self._db.find_user_by(email=email)
             raise ValueError(f"User {email} already exists.")
         except NoResultFound:
-            # User does not exist, proceed with registration
-            hashed_password = self._hash_password(password)
-            return self._db.add_user(email, hashed_password)
+            pass  # User does not exist, proceed to register
+
+        # If not, hash the password with _hash_password
+        hashed_password = self._hash_password(password)
+
+        # Save the user to the database using self._db
+        user = self._db.add_user(email, hashed_password)
+
+        # Return the User object
+        return user
