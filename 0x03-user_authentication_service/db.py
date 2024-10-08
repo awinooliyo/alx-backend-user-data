@@ -80,6 +80,7 @@ class DB:
             NoResultFound: If no user matches the criteria.
             InvalidRequestError: If invalid query arguments are passed.
         """
+        session = self._session
         try:
             user = self._session.query(User).filter_by(**kwargs).one()
         except NoResultFound:
@@ -122,4 +123,4 @@ class DB:
             self._session.commit()
         except InvalidRequestError:
             # Raise error if an invalid request is made
-            raise ValueError("Invalid")
+            raise ValueError("Invalidi request")
