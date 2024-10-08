@@ -44,7 +44,7 @@ def register_user():
         return jsonify({"email": email, "message": "user created"}), 200
     except ValueError:
         # If the user already exists, return the appropriate response
-        return jsonify({"message": "email already registered"}), 400
+        return jsonify({"message": "email already registered"}), 200
 
 
 @app.route("/users", methods=["POST"], strict_slashes=False)
