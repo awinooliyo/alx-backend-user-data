@@ -8,24 +8,25 @@ import bcrypt
 from sqlalchemy.orm.exc import NoResultFound
 
 
-def _hash_password(password: str) -> str:
-    """Hashes a password and returns bytes.
-
-    Args:
-        password (str): The password to be hashed.
-
-    Returns:
-        bytes: The hashed password.
-    """
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
-
-
 class Auth:
     """Auth class to interact with the authentication database."""
 
     def __init__(self):
         """Initializes the Auth class with a database instance."""
         self._db = DB()
+
+    def _hash_password(self, password: str) -> str:
+        """
+        Hashes a password and returns the hashed password.
+
+        Args:
+            password (str): The password to be hashed.
+
+        Returns:
+            str: The hashed password.
+        """
+        return bcrypt.hashpw(password.encode("utf-8"),
+                             bcrypt.gensalt()).decode('utf-8')
 
     def register_user(self, email: str, password: str) -> User:
         """
