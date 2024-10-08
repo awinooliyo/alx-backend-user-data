@@ -34,17 +34,13 @@ def register_user():
     """
     email = request.form.get('email')
     password = request.form.get('password')
-
-    if not email or not password:
-        return jsonify({"message": "Missing email or password"}), 400
-
     try:
         # Register the user using the Auth object
         AUTH.register_user(email, password)
         return jsonify({"email": email, "message": "user created"}), 200
     except ValueError:
         # If the user already exists, return the appropriate response
-        return jsonify({"message": "email already registered"}), 200
+        return jsonify({"message": "email already registered"}), 400
 
 
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
