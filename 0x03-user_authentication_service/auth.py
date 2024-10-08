@@ -8,6 +8,7 @@ from user import User
 import bcrypt
 from sqlalchemy.orm.exc import NoResultFound
 
+
 class Auth:
     """Auth class to interact with the authentication database."""
 
@@ -49,4 +50,5 @@ class Auth:
             raise ValueError(f"User {email} already exists")
         except NoResultFound:
             hashed_password = self._hash_password(password)
-            return self._db.add_user(email=email, hashed_password=hashed_password)
+            return self._db.add_user(email=email,
+                                     hashed_password=hashed_password)
