@@ -25,9 +25,7 @@ class Auth:
         Returns:
             bytes: The salted hash of the password.
         """
-        salt = bcrypt.gensalt()  # Generate a salt
-        hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-        return hashed
+        return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
     def register_user(self, email: str, password: str) -> User:
         """
