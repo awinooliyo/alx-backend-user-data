@@ -21,11 +21,12 @@ class DB:
     """DB class to manage database interactions.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, reset: bool = False) -> None:
         """Initialize a new DB instance and create tables.
         """
         self._engine = create_engine("sqlite:///a.db", echo=True)
-        Base.metadata.drop_all(self._engine)  # Consider commenting this out
+        if reset:
+            Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
 
@@ -37,6 +38,12 @@ class DB:
             DBSession = sessionmaker(bind=self._engine)
             self.__session = DBSession()
         return self.__session
+
+    def close_session(self) -> None:
+        """Close the current session."""
+        if self.__session:
+            self._session.close()
+            self.__session = None
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """
@@ -54,30 +61,31 @@ class DB:
         try:
             self._session.add(new_user)
             self._session.commit()
-        except (InvalidRequestError, NoResultFound) as e:
-            logging.error(f"Error adding user to database: {e}")
+        except Exception as e:
+            print(f"Error adding user to database: {e}")
             self._session.rollback()
             raise
         return new_user
 
     def find_user_by(self, **kwargs: Dict[str, str]) -> User:
-        """Find a user by specified attributes.
+        """Find a user in the database using arbitrary keyword arguments.
 
-        Raises:
-            error: NoResultFound: When no results are found.
-            error: InvalidRequestError: When invalid query arguments are passed
+        Args:
+            **kwargs: Arbitrary keyword arguments to filter the query.
 
         Returns:
-            User: First row found in the `users` table.
+            User: The first User object found matching the given arguments.
+
+        Raises:
+            NoResultFound: If no user matches the criteria.
+            InvalidRequestError: If invalid query arguments are passed.
         """
-        session = self._session
         try:
-            user = session.query(User).filter_by(**kwargs).one()
+            user = self._session.query(User).filter_by(**kwargs).one()
         except NoResultFound:
             raise NoResultFound()
         except InvalidRequestError:
             raise InvalidRequestError()
-        # print("Type of user: {}".format(type(user)))
         return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
@@ -114,4 +122,4 @@ class DB:
             self._session.commit()
         except InvalidRequestError:
             # Raise error if an invalid request is made
-            raise ValueError("Invalid request")
+            raise ValueError("Invalid")
