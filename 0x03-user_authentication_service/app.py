@@ -21,6 +21,32 @@ def index() -> str:
     return jsonify({"message": "Bienvenue"})
 
 
+@app.route('/users', methods=['POST'])
+def register_user():
+    """
+    POST /users route to register a new user.
+    Expects 'email' and 'password' in the form data.
+    Returns:
+        - JSON response {"email": "<email>", "message": "user created"}
+          if the user is created.
+        - JSON response {"message": "email already registered"}
+          with status 400 if the user already exists.
+    """
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    if not email or not password:
+        return jsonify({"message": "Missing email or password"}), 400
+
+    try:
+        # Register the user using the Auth object
+        AUTH.register_user(email, password)
+        return jsonify({"email": email, "message": "user created"}), 200
+    except ValueError:
+        # If the user already exists, return the appropriate response
+        return jsonify({"message": "email already registered"}), 400
+
+
 @app.route("/users", methods=["POST"], strict_slashes=False)
 def users() -> str:
     """POST /users
