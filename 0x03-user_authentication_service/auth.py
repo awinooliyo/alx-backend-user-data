@@ -2,7 +2,6 @@
 """
 Auth module to handle user registration and authentication.
 """
-from typing import Optional
 from db import DB
 from user import User
 import bcrypt
@@ -30,7 +29,7 @@ class Auth:
         hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed
 
-    def register_user(self, email: str, password: str) -> Optional[User]:
+    def register_user(self, email: str, password: str) -> User:
         """
         Registers a new user with email and password.
 
